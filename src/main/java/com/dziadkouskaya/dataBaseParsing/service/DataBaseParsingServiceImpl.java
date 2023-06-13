@@ -54,8 +54,8 @@ public class DataBaseParsingServiceImpl implements DataBaseParsingService {
         return connectionInfo;
     }
 
-    @Override
-    public List<DataBase> createDatabases(DatabaseMetaData meta) throws DatabaseConnectionException {
+
+    private List<DataBase> createDatabases(DatabaseMetaData meta) throws DatabaseConnectionException {
         var databases = new ArrayList<DataBase>();
         try (ResultSet resultSet = meta.getCatalogs()) {
             while (resultSet.next()) {

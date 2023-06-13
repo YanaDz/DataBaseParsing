@@ -14,8 +14,7 @@ import java.util.List;
 public interface DataBaseParsingService {
     ConnectionDto getConnectionInfoFromPath(String dataBadeConnection, String user, String password) throws DatabaseConnectionException;
 
-    public ConnectionInfo createConnectionInfo(String dataBadeConnection, String user, String password) throws DatabaseConnectionException;
-    public List<DataBase> createDatabases(DatabaseMetaData meta) throws DatabaseConnectionException;
+    ConnectionInfo createConnectionInfo(String dataBadeConnection, String user, String password) throws DatabaseConnectionException;
     ConnectionInfo saveConnectionInfo(ConnectionInfo connectionInfo);
 
     List<DatabaseDto> getExistedDatabases(SearchRequest searchRequest);
