@@ -12,7 +12,7 @@ public class DataBasePersistenceImpl implements DataBasePersistence {
     private final Storage storage;
 
     @Override
-    public ConnectionInfo saveDatabaseMetaData(ConnectionInfo connectionInfo) {
+    public ConnectionInfo saveConnectionInfo(ConnectionInfo connectionInfo) {
         return storage.persistConnectionInfo(connectionInfo);
     }
 }

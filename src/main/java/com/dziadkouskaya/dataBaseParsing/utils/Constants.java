@@ -6,8 +6,8 @@ import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
 public class Constants {
-    public static final String PARAM_TABLE_CATALOG = "TABLE_CAT";
-    public static final String PARAM_COLUMN_NAME = "COLUMN_NAME";
+    // exception messages
+    public static final String INNER_SERVER_ERROR_MESSAGE = "SERVER ERROR";
+    public static final String ACCESS_DENIED_MESSAGE = "ACCESS DENIED";
 
-    public static final String PARAM_COLUMN_TYPE = "TYPE_NAME";
 }

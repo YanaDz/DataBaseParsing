@@ -1,4 +1,4 @@
-package com.dziadkouskaya.dataBaseParsing.entity;
+package com.dziadkouskaya.dataBaseParsing.entity.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +13,11 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DataBase {
+public class DatabaseDto {
     private String databaseName;
+    private Integer schemaNumber;
     @Builder.Default
-    private List<DatabaseSchema> schemas = new ArrayList<>();
+    List<SchemaDto> schemas  = new ArrayList<>();
+
+
 }

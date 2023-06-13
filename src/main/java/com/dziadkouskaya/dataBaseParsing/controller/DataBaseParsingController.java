@@ -1,6 +1,8 @@
 package com.dziadkouskaya.dataBaseParsing.controller;
 
 import com.dziadkouskaya.dataBaseParsing.entity.ConnectionInfo;
+import com.dziadkouskaya.dataBaseParsing.entity.dto.ConnectionDto;
+import com.dziadkouskaya.dataBaseParsing.exception.DatabaseConnectionException;
 import com.dziadkouskaya.dataBaseParsing.service.DataBaseParsingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +23,7 @@ public class DataBaseParsingController {
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public ConnectionInfo getCatalogByConnection(String connection, String user, String password) {
+    public ConnectionDto getCatalogByConnection(String connection, String user, String password) throws DatabaseConnectionException {
         return dataBaseParsingService.getConnectionInfoFromPath(connection, user, password);
     }
 }

@@ -1,11 +1,13 @@
 package com.dziadkouskaya.dataBaseParsing.service;
 
 import com.dziadkouskaya.dataBaseParsing.entity.ConnectionInfo;
+import com.dziadkouskaya.dataBaseParsing.entity.dto.ConnectionDto;
+import com.dziadkouskaya.dataBaseParsing.exception.DatabaseConnectionException;
 
 import java.sql.DatabaseMetaData;
 
 public interface DataBaseParsingService {
-    ConnectionInfo getConnectionInfoFromPath(String dataBadeConnection, String user, String password);
+    ConnectionDto getConnectionInfoFromPath(String dataBadeConnection, String user, String password) throws DatabaseConnectionException;
 
-    DatabaseMetaData saveDatabaseMeta(String dataBadeConnection, String user, String password, DatabaseMetaData meta);
+    ConnectionInfo saveConnectionInfo(ConnectionInfo connectionInfo);
 }
