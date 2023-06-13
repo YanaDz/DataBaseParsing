@@ -10,7 +10,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +33,8 @@ public class DataBaseParsingServiceImpl implements DataBaseParsingService {
         return connectionMapper.toDto(connectionInfo);
     }
 
-    private ConnectionInfo createConnectionInfo(String dataBadeConnection, String user, String password) throws DatabaseConnectionException {
+    @Override
+    public ConnectionInfo createConnectionInfo(String dataBadeConnection, String user, String password) throws DatabaseConnectionException {
         ConnectionInfo connectionInfo = null;
         try (Connection connection = DriverManager.getConnection(dataBadeConnection, user, password)) {
             DatabaseMetaData metaData = connection.getMetaData();
@@ -42,7 +47,8 @@ public class DataBaseParsingServiceImpl implements DataBaseParsingService {
         return connectionInfo;
     }
 
-    private List<DataBase> createDatabases(DatabaseMetaData meta) throws DatabaseConnectionException {
+    @Override
+    public List<DataBase> createDatabases(DatabaseMetaData meta) throws DatabaseConnectionException {
         var databases = new ArrayList<DataBase>();
         try (ResultSet resultSet = meta.getCatalogs()) {
             while (resultSet.next()) {
