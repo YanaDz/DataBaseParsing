@@ -61,6 +61,7 @@ public interface ConnectionMapper {
 
     @Mapping(target = "path", source = "connection.connectionPath")
     @Mapping(target = "databaseType", source = "connection.databaseType")
+    @Mapping(target = "hash", source = "connection.connectionHash")
     @Mapping(target = "databaseNumber", expression = "java(connection.getDatabases().size())")
     @Mapping(target = "databases", expression = "java(getDatabaseDtos(connection))")
     ConnectionDto toDto(ConnectionInfo connection);

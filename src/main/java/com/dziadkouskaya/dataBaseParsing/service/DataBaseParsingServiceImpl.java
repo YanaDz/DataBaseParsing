@@ -2,7 +2,10 @@ package com.dziadkouskaya.dataBaseParsing.service;
 
 import com.dziadkouskaya.dataBaseParsing.entity.ConnectionInfo;
 import com.dziadkouskaya.dataBaseParsing.entity.DataBase;
+import com.dziadkouskaya.dataBaseParsing.entity.SearchRequest;
 import com.dziadkouskaya.dataBaseParsing.entity.dto.ConnectionDto;
+import com.dziadkouskaya.dataBaseParsing.entity.dto.DatabaseDto;
+import com.dziadkouskaya.dataBaseParsing.entity.dto.SchemaDto;
 import com.dziadkouskaya.dataBaseParsing.exception.DatabaseConnectionException;
 import com.dziadkouskaya.dataBaseParsing.persistence.DataBasePersistence;
 import com.dziadkouskaya.dataBaseParsing.service.mapper.ConnectionMapper;
@@ -17,12 +20,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.dziadkouskaya.dataBaseParsing.utils.Validation.checkSearchRequest;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class DataBaseParsingServiceImpl implements DataBaseParsingService {
     private final DataBasePersistence dataBasePersistence;
+    private final SearchService searchService;
 
     protected final ConnectionMapper connectionMapper;
 
@@ -82,6 +89,52 @@ public class DataBaseParsingServiceImpl implements DataBaseParsingService {
     @Override
     public ConnectionInfo saveConnectionInfo(ConnectionInfo connectionInfo) {
         return dataBasePersistence.saveConnectionInfo(connectionInfo);
+    }
+
+    @Override
+    public List<DatabaseDto> getExistedDatabases(SearchRequest searchRequest) {
+        var existedDatabases = dataBasePersistence.getDatabases();
+        checkSearchRequest(searchRequest);
+        var regex = searchService.createRegex(searchRequest);
+        var databasesWithSearch = searchService.searchInDatabaseNames(existedDatabases, regex, searchRequest.getSorting());
+        return databasesWithSearch.stream()
+            .map(connectionMapper::toDto)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SchemaDto> getExistedSchemas(SearchRequest searchRequest) {
+        var existedSchemas = dataBasePersistence.getSchemas();
+        checkSearchRequest(searchRequest);
+        var regex = searchService.createRegex(searchRequest);
+        var limitSortedSchemas = searchService.searchInSchemaNames(existedSchemas, regex, searchRequest.getSorting());
+        return limitSortedSchemas.stream()
+            .map(connectionMapper::toDto)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DatabaseDto> getDatabasesFromConnection(String connection, String user, String password, SearchRequest searchRequest) throws DatabaseConnectionException {
+        var connectionInfo = getConnectionInfoFromPath(connection, user, password);
+        var existedDatabases = dataBasePersistence.getDatabasesByHash(connectionInfo.getHash());
+        checkSearchRequest(searchRequest);
+        var regex = searchService.createRegex(searchRequest);
+        var databasesWithSearch = searchService.searchInDatabaseNames(existedDatabases, regex, searchRequest.getSorting());
+        return databasesWithSearch.stream()
+            .map(connectionMapper::toDto)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SchemaDto> getSchemasFromConnection(String connection, String user, String password, SearchRequest searchRequest) throws DatabaseConnectionException {
+        var connectionInfo = getConnectionInfoFromPath(connection, user, password);
+        var schemas = dataBasePersistence.getSchemasByHash(connectionInfo.getHash());
+        checkSearchRequest(searchRequest);
+        var regex = searchService.createRegex(searchRequest);
+        var limitSortedSchemas = searchService.searchInSchemaNames(schemas, regex, searchRequest.getSorting());
+        return limitSortedSchemas.stream()
+            .map(connectionMapper::toDto)
+            .collect(Collectors.toList());
     }
 
 }

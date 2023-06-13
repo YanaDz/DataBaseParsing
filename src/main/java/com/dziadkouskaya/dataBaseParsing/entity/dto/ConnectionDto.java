@@ -16,6 +16,7 @@ public class ConnectionDto {
     private String path;
     private String databaseType;
     private Integer databaseNumber;
+    private Integer hash;
     @Builder.Default
     private List<DatabaseDto> databases = new ArrayList<>();
 
