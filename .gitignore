@@ -5,6 +5,8 @@ build/
 /.gradletasknamecache
 !**/src/main/**
 !**/src/test/**
+gradlew.bat
+gradlew
 
 ### STS ###
 .apt_generated
