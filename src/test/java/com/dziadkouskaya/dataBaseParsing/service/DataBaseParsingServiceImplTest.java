@@ -51,9 +51,9 @@ class DataBaseParsingServiceImplTest {
 
     private MockedStatic<DriverManager> staticMock;
 
-    private String path = "jdbc:postgresql://localhost:5432/database";
-    private String user = "user";
-    private String password = "password";
+    private final String path = "jdbc:postgresql://localhost:5432/database";
+    private final String user = "user";
+    private final String password = "password";
 
     @BeforeEach
     void setUp() {

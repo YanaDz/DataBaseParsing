@@ -137,4 +137,27 @@ public class DataBaseParsingServiceImpl implements DataBaseParsingService {
             .collect(Collectors.toList());
     }
 
+    @Override
+    public List<DatabaseDto> updateToUpperCaseExistedDatabases() {
+        var existedConnections = dataBasePersistence.getConnections();
+        existedConnections.values()
+            .forEach(connectionInfo -> {
+                connectionInfo.getDatabases().forEach(DataBase::toUpperCase);
+                dataBasePersistence.saveConnectionInfo(connectionInfo);
+            });
+        return dataBasePersistence.getDatabases().stream()
+            .map(connectionMapper::toDto)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DatabaseDto> updateToUpperCaseFromConnection(String connection, String user, String password) throws DatabaseConnectionException {
+        var connectionInfo = createConnectionInfo(connection, user, password);
+        connectionInfo.getDatabases().forEach(DataBase::toUpperCase);
+        connectionInfo = saveConnectionInfo(connectionInfo);
+        return connectionInfo.getDatabases().stream()
+            .map(connectionMapper::toDto)
+            .collect(Collectors.toList());
+    }
+
 }

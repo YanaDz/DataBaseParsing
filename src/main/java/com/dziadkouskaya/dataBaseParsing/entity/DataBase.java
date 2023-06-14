@@ -17,4 +17,9 @@ public class DataBase {
     private String databaseName;
     @Builder.Default
     private List<DatabaseSchema> schemas = new ArrayList<>();
+
+    public void toUpperCase() {
+        this.databaseName = this.databaseName.toUpperCase();
+        schemas.forEach(DatabaseSchema::toUpperCase);
+    }
 }

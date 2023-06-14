@@ -15,7 +15,11 @@ import java.util.List;
 @AllArgsConstructor
 public class Table {
     private String tableName;
-
     @Builder.Default
     private List<Column> columns = new ArrayList<>();
+
+    public void toUpperCase() {
+        this.tableName = this.tableName.toUpperCase();
+        columns.forEach(Column::toUpperCase);
+    }
 }
