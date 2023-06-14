@@ -36,4 +36,4 @@ out/
 
 ### Other ###
 lombok.config
-.env
+*.env
