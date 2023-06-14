@@ -35,6 +35,7 @@ public class DataBaseParsingServiceImpl implements DataBaseParsingService {
 
     @Override
     public ConnectionDto getConnectionInfoFromPath(String dataBadeConnection, String user, String password) throws DatabaseConnectionException {
+        log.info("Get information from connection {}.", dataBadeConnection);
         var connectionInfo = createConnectionInfo(dataBadeConnection, user, password);
         connectionInfo = saveConnectionInfo(connectionInfo);
         return connectionMapper.toDto(connectionInfo);
@@ -48,7 +49,9 @@ public class DataBaseParsingServiceImpl implements DataBaseParsingService {
             connectionInfo = connectionMapper.toConnectionInfo(dataBadeConnection, metaData);
             var databases = createDatabases(metaData);
             connectionInfo.getDatabases().addAll(databases);
+            log.info("Created {} databases.", databases.size());
         } catch (SQLException e) {
+            log.error("Exception during taking info from connection: {}", dataBadeConnection);
             throw new DatabaseConnectionException(e);
         }
         return connectionInfo;
@@ -60,20 +63,24 @@ public class DataBaseParsingServiceImpl implements DataBaseParsingService {
         try (ResultSet resultSet = meta.getCatalogs()) {
             while (resultSet.next()) {
                 var database = connectionMapper.toDatabase(resultSet);
+                log.info("Created database with name {}.", database.getDatabaseName());
                 var schemaResultSet = meta.getSchemas(database.getDatabaseName(), null);
 
                 while (schemaResultSet.next()) {
                     var schema = connectionMapper.toSchema(schemaResultSet);
+                    log.info("Created schema with name {}.", schema.getSchemaName());
                     var tableResultSet = meta.getTables(null, schema.getSchemaName(), null, new String[]{"TABLE"});
 
                     while (tableResultSet.next()) {
                         var table = connectionMapper.toTable(tableResultSet);
+                        log.info("Created table with name {}.", table.getTableName());
                         ResultSet columnResultSet = meta.getColumns(null, null, table.getTableName(), null);
 
                         while (columnResultSet.next()) {
                             var column = connectionMapper.toColumn(columnResultSet);
                             table.getColumns().add(column);
                         }
+                        log.info("Created {} columns in database {}.", table.getColumns().size(), table.getTableName());
                         schema.getTables().add(table);
                     }
                     database.getSchemas().add(schema);
@@ -81,6 +88,7 @@ public class DataBaseParsingServiceImpl implements DataBaseParsingService {
                 databases.add(database);
             }
         } catch (SQLException e) {
+            log.error("Exception during transfer DatabaseMetaData to inner storage.");
             throw new DatabaseConnectionException(e);
         }
         return databases;
@@ -88,50 +96,70 @@ public class DataBaseParsingServiceImpl implements DataBaseParsingService {
 
     @Override
     public ConnectionInfo saveConnectionInfo(ConnectionInfo connectionInfo) {
-        return dataBasePersistence.saveConnectionInfo(connectionInfo);
+        var connection = dataBasePersistence.saveConnectionInfo(connectionInfo);
+        log.info("Connection from {} and hash {} was saved to storage.", connectionInfo.getConnectionPath(),
+            connectionInfo.getConnectionHash());
+        return connection;
     }
 
     @Override
     public List<DatabaseDto> getExistedDatabases(SearchRequest searchRequest) {
+        log.info("Start getting info about existed databases with params: search field {}, sort {}.",
+            searchRequest.getSearch(), searchRequest.getSorting());
         var existedDatabases = dataBasePersistence.getDatabases();
+        log.info("Number of existed databases in storage is {}.", existedDatabases.size());
         checkSearchRequest(searchRequest);
         var regex = searchService.createRegex(searchRequest);
-        var databasesWithSearch = searchService.searchInDatabaseNames(existedDatabases, regex, searchRequest.getSorting());
-        return databasesWithSearch.stream()
+        var filteringDatabases = searchService.searchInDatabaseNames(existedDatabases, regex, searchRequest.getSorting());
+        log.info("Number of databases after the filtering is {}", filteringDatabases.size());
+        return filteringDatabases.stream()
             .map(connectionMapper::toDto)
             .collect(Collectors.toList());
     }
 
     @Override
     public List<SchemaDto> getExistedSchemas(SearchRequest searchRequest) {
+        log.info("Start getting info about existed schemas with params: search field {}, sort {}.",
+            searchRequest.getSearch(), searchRequest.getSorting());
         var existedSchemas = dataBasePersistence.getSchemas();
+        log.info("Number of existed schemas in storage is {}.", existedSchemas.size());
         checkSearchRequest(searchRequest);
         var regex = searchService.createRegex(searchRequest);
         var limitSortedSchemas = searchService.searchInSchemaNames(existedSchemas, regex, searchRequest.getSorting());
+        log.info("Number of schemas after the filtering is {}", limitSortedSchemas.size());
         return limitSortedSchemas.stream()
             .map(connectionMapper::toDto)
             .collect(Collectors.toList());
     }
 
     @Override
-    public List<DatabaseDto> getDatabasesFromConnection(String connection, String user, String password, SearchRequest searchRequest) throws DatabaseConnectionException {
+    public List<DatabaseDto> getDatabasesFromConnection(String connection, String user, String password, SearchRequest searchRequest)
+        throws DatabaseConnectionException {
+        log.info("Start getting databases info from connection {}.", connection);
         var connectionInfo = getConnectionInfoFromPath(connection, user, password);
         var existedDatabases = dataBasePersistence.getDatabasesByHash(connectionInfo.getHash());
+        log.info("Number of all database from connection is {}.", existedDatabases.size());
         checkSearchRequest(searchRequest);
         var regex = searchService.createRegex(searchRequest);
         var databasesWithSearch = searchService.searchInDatabaseNames(existedDatabases, regex, searchRequest.getSorting());
+        log.info("Number of databases after the filtering by search field {} is {}",searchRequest.getSearch(),  databasesWithSearch.size());
         return databasesWithSearch.stream()
             .map(connectionMapper::toDto)
             .collect(Collectors.toList());
     }
 
     @Override
-    public List<SchemaDto> getSchemasFromConnection(String connection, String user, String password, SearchRequest searchRequest) throws DatabaseConnectionException {
+    public List<SchemaDto> getSchemasFromConnection(String connection, String user, String password, SearchRequest searchRequest)
+        throws DatabaseConnectionException {
+        log.info("Start getting schemas info from connection {}.", connection);
         var connectionInfo = getConnectionInfoFromPath(connection, user, password);
         var schemas = dataBasePersistence.getSchemasByHash(connectionInfo.getHash());
+        log.info("Number of all schemas from connection is {}.", schemas.size());
         checkSearchRequest(searchRequest);
         var regex = searchService.createRegex(searchRequest);
         var limitSortedSchemas = searchService.searchInSchemaNames(schemas, regex, searchRequest.getSorting());
+        log.info("Number of schemas after the filtering by search field {} is {}",searchRequest.getSearch(),
+            limitSortedSchemas.size());
         return limitSortedSchemas.stream()
             .map(connectionMapper::toDto)
             .collect(Collectors.toList());
@@ -139,22 +167,28 @@ public class DataBaseParsingServiceImpl implements DataBaseParsingService {
 
     @Override
     public List<DatabaseDto> updateToUpperCaseExistedDatabases() {
+        log.info("Start updated entities from storage to upper case");
         var existedConnections = dataBasePersistence.getConnections();
+        log.info("Number of existed connections is {}.", existedConnections.size());
         existedConnections.values()
             .forEach(connectionInfo -> {
                 connectionInfo.getDatabases().forEach(DataBase::toUpperCase);
                 dataBasePersistence.saveConnectionInfo(connectionInfo);
             });
+        log.info("Finished updating entities from storage to upper case");
         return dataBasePersistence.getDatabases().stream()
             .map(connectionMapper::toDto)
             .collect(Collectors.toList());
     }
 
     @Override
-    public List<DatabaseDto> updateToUpperCaseFromConnection(String connection, String user, String password) throws DatabaseConnectionException {
+    public List<DatabaseDto> updateToUpperCaseFromConnection(String connection, String user, String password)
+        throws DatabaseConnectionException {
+        log.info("Start updated entities from connection {} to upper case.", connection);
         var connectionInfo = createConnectionInfo(connection, user, password);
         connectionInfo.getDatabases().forEach(DataBase::toUpperCase);
         connectionInfo = saveConnectionInfo(connectionInfo);
+        log.info("Updated {} database to upper case.", connectionInfo.getDatabases().size());
         return connectionInfo.getDatabases().stream()
             .map(connectionMapper::toDto)
             .collect(Collectors.toList());

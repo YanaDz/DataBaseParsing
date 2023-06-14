@@ -23,7 +23,9 @@ import static java.util.Objects.isNull;
 public class SearchServiceImpl implements SearchService {
     @Override
     public String createRegex(SearchRequest searchRequest) {
-        return DOT + STAR + searchRequest.getSearch() + DOT + STAR;
+        var result = DOT + STAR + searchRequest.getSearch() + DOT + STAR;
+        log.info("Search request in regex is {}.", result);
+        return result;
     }
 
     @Override
@@ -34,12 +36,14 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private List<DataBase> searchInNamesWithoutSort(List<DataBase> dataBases, String regex) {
+        log.info("Get databases without sorting");
         return dataBases.stream()
             .filter(database -> Pattern.matches(regex, database.getDatabaseName()))
             .collect(Collectors.toList());
     }
 
     private List<DataBase> searchInNamesWithSort(List<DataBase> dataBases, String regex, Sorting sort) {
+        log.info("Get databases with sorting {}", sort);
         return sort == Sorting.ASC
             ? dataBases.stream()
             .filter(database -> Pattern.matches(regex, database.getDatabaseName()))
@@ -59,12 +63,14 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private List<DatabaseSchema> searchInSchemaNamesWithoutSort(List<DatabaseSchema> dataBases, String regex) {
+        log.info("Get schemas without sorting");
         return dataBases.stream()
             .filter(schema -> Pattern.matches(regex, schema.getSchemaName()))
             .collect(Collectors.toList());
     }
 
     private List<DatabaseSchema> searchInSchemasNamesWithSort(List<DatabaseSchema> schemas, String regex, Sorting sort) {
+        log.info("Get schemas with sorting {}", sort);
         return sort == Sorting.ASC
             ? schemas.stream()
             .filter(schema -> Pattern.matches(regex, schema.getSchemaName()))
