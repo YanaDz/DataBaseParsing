@@ -12,4 +12,9 @@ import lombok.experimental.SuperBuilder;
 public class Column {
     private String columnName;
     private String columnType;
+
+    public void toUpperCase() {
+        this.columnName = this.columnName.toUpperCase();
+        this.columnType = this.columnType.toUpperCase();
+    }
 }

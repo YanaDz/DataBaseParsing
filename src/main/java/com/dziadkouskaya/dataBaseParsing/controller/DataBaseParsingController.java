@@ -9,12 +9,7 @@ import com.dziadkouskaya.dataBaseParsing.exception.DatabaseConnectionException;
 import com.dziadkouskaya.dataBaseParsing.service.DataBaseParsingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -54,5 +49,17 @@ public class DataBaseParsingController {
     @ResponseStatus(HttpStatus.OK)
     public List<SchemaDto> getAllExistedSchemas(SearchRequest searchRequest) {
         return dataBaseParsingService.getExistedSchemas(searchRequest);
+    }
+
+    @PostMapping(value = "/connection-to-upper-case")
+    @ResponseStatus(HttpStatus.OK)
+    public List<DatabaseDto> updateEntitiesFromConnectionToUpperCase(@RequestBody ConnectionRequest request) throws DatabaseConnectionException {
+        return dataBaseParsingService.updateToUpperCaseFromConnection(request.getConnection(), request.getUser(), request.getPassword());
+    }
+
+    @PutMapping(value = "/to-upper-case")
+    @ResponseStatus(HttpStatus.OK)
+    public List<DatabaseDto> updateExistedEntitiesToUpperCase() {
+        return dataBaseParsingService.updateToUpperCaseExistedDatabases();
     }
 }

@@ -1,14 +1,13 @@
 package com.dziadkouskaya.dataBaseParsing.service;
 
 import com.dziadkouskaya.dataBaseParsing.entity.ConnectionInfo;
-import com.dziadkouskaya.dataBaseParsing.entity.DataBase;
+import com.dziadkouskaya.dataBaseParsing.entity.ConnectionRequest;
 import com.dziadkouskaya.dataBaseParsing.entity.SearchRequest;
 import com.dziadkouskaya.dataBaseParsing.entity.dto.ConnectionDto;
 import com.dziadkouskaya.dataBaseParsing.entity.dto.DatabaseDto;
 import com.dziadkouskaya.dataBaseParsing.entity.dto.SchemaDto;
 import com.dziadkouskaya.dataBaseParsing.exception.DatabaseConnectionException;
 
-import java.sql.DatabaseMetaData;
 import java.util.List;
 
 public interface DataBaseParsingService {
@@ -27,4 +26,7 @@ public interface DataBaseParsingService {
     List<SchemaDto> getSchemasFromConnection(String connection, String user, String password, SearchRequest searchRequest) throws DatabaseConnectionException;
 
 
+    List<DatabaseDto> updateToUpperCaseExistedDatabases();
+
+    List<DatabaseDto> updateToUpperCaseFromConnection(String connection, String user, String password) throws DatabaseConnectionException;
 }

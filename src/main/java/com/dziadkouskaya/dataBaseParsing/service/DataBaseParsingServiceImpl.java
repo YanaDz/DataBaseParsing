@@ -1,6 +1,7 @@
 package com.dziadkouskaya.dataBaseParsing.service;
 
 import com.dziadkouskaya.dataBaseParsing.entity.ConnectionInfo;
+import com.dziadkouskaya.dataBaseParsing.entity.ConnectionRequest;
 import com.dziadkouskaya.dataBaseParsing.entity.DataBase;
 import com.dziadkouskaya.dataBaseParsing.entity.SearchRequest;
 import com.dziadkouskaya.dataBaseParsing.entity.dto.ConnectionDto;
@@ -133,6 +134,29 @@ public class DataBaseParsingServiceImpl implements DataBaseParsingService {
         var regex = searchService.createRegex(searchRequest);
         var limitSortedSchemas = searchService.searchInSchemaNames(schemas, regex, searchRequest.getSorting());
         return limitSortedSchemas.stream()
+            .map(connectionMapper::toDto)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DatabaseDto> updateToUpperCaseExistedDatabases() {
+        var existedConnections = dataBasePersistence.getConnections();
+        existedConnections.values()
+            .forEach(connectionInfo -> {
+                connectionInfo.getDatabases().forEach(DataBase::toUpperCase);
+                dataBasePersistence.saveConnectionInfo(connectionInfo);
+            });
+        return dataBasePersistence.getDatabases().stream()
+            .map(connectionMapper::toDto)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DatabaseDto> updateToUpperCaseFromConnection(String connection, String user, String password) throws DatabaseConnectionException {
+        var connectionInfo = createConnectionInfo(connection, user, password);
+        connectionInfo.getDatabases().forEach(DataBase::toUpperCase);
+        connectionInfo = saveConnectionInfo(connectionInfo);
+        return connectionInfo.getDatabases().stream()
             .map(connectionMapper::toDto)
             .collect(Collectors.toList());
     }

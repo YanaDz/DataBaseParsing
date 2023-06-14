@@ -18,4 +18,9 @@ public class DatabaseSchema {
     @Builder.Default
     private List<Table> tables = new ArrayList<>();
 
+    public void toUpperCase() {
+        this.schemaName = this.schemaName.toUpperCase();
+        tables.forEach(Table::toUpperCase);
+    }
+
 }
