@@ -1,7 +1,6 @@
 package com.dziadkouskaya.dataBaseParsing.service;
 
 import com.dziadkouskaya.dataBaseParsing.entity.ConnectionInfo;
-import com.dziadkouskaya.dataBaseParsing.entity.ConnectionRequest;
 import com.dziadkouskaya.dataBaseParsing.entity.DataBase;
 import com.dziadkouskaya.dataBaseParsing.entity.SearchRequest;
 import com.dziadkouskaya.dataBaseParsing.entity.dto.ConnectionDto;
