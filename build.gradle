@@ -17,8 +17,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-rest'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.mapstruct:mapstruct:1.5.3.Final'
-    implementation 'mysql:mysql-connector-java:8.0.28'
+    implementation 'org.ehcache:ehcache:3.10.8'
+
 
     compileOnly 'org.projectlombok:lombok'
 

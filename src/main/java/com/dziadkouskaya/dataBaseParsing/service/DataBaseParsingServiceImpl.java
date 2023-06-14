@@ -12,6 +12,7 @@ import com.dziadkouskaya.dataBaseParsing.service.mapper.ConnectionMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -27,6 +28,7 @@ import static com.dziadkouskaya.dataBaseParsing.utils.Validation.checkSearchRequ
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class DataBaseParsingServiceImpl implements DataBaseParsingService {
     private final DataBasePersistence dataBasePersistence;
     private final SearchService searchService;
