@@ -29,9 +29,7 @@ public class Storage {
 
     @CachePut(CONNECTIONS)
     public ConnectionInfo persistConnectionInfo(ConnectionInfo connectionInfo) {
-        var map = Map.of(connectionInfo.getConnectionHash(), connectionInfo);
         cacheManager.getCache(CONNECTIONS).put(CONNECTIONS, Map.of(connectionInfo.getConnectionHash(), connectionInfo));
-
         return connectionInfo;
     }
 

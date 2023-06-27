@@ -10,6 +10,8 @@ public class Constants {
     public static final String INNER_SERVER_ERROR_MESSAGE = "SERVER ERROR";
     public static final String ACCESS_DENIED_MESSAGE = "ACCESS DENIED";
 
+    public static final String EMPTY_STORAGE_MESSAGE = "No info in storage";
+
     //specific symbols
     public static final String COLON = ":";
     public static final String DOT = ".";
