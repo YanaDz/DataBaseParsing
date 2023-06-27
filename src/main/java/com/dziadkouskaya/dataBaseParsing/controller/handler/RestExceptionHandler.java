@@ -2,6 +2,7 @@ package com.dziadkouskaya.dataBaseParsing.controller.handler;
 
 import com.dziadkouskaya.dataBaseParsing.exception.ApplicationException;
 import com.dziadkouskaya.dataBaseParsing.exception.DatabaseConnectionException;
+import com.dziadkouskaya.dataBaseParsing.exception.EmptyStorageException;
 import com.dziadkouskaya.dataBaseParsing.exception.RestErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +26,11 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(DatabaseConnectionException.class)
     protected ResponseEntity<RestErrorResponse> handleBindException(DatabaseConnectionException ex, WebRequest request) {
+        return handleInternal(ex, INTERNAL_SERVER_ERROR, ex.getMessage());
+    }
+
+    @ExceptionHandler(EmptyStorageException.class)
+    protected ResponseEntity<RestErrorResponse> handleBindException(EmptyStorageException ex, WebRequest request) {
         return handleInternal(ex, INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
