@@ -30,7 +30,8 @@ public class DataBaseParsingController {
     @PostMapping(value = "/connection-databases")
     @ResponseStatus(HttpStatus.OK)
     public List<DatabaseDto> getDatabasesFromConnection(@RequestBody ConnectionRequest request, SearchRequest searchRequest) throws DatabaseConnectionException {
-        return dataBaseParsingService.getDatabasesFromConnection(request.getConnection(), request.getUser(), request.getPassword(), searchRequest);
+        return dataBaseParsingService.getDatabasesFromConnection(request.getConnection(),
+            request.getUser(), request.getPassword(), searchRequest);
     }
 
     @PostMapping(value = "/connection-schemas")
